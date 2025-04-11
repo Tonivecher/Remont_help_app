@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Смета</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    input { width: 100%; }
+    .total { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Калькулятор сметы</h1>
+  <table id="smeta-table">
+    <thead>
+      <tr>
+        <th>Наименование</th>
+        <th>Кол-во</th>
+        <th>Цена за единицу</th>
+        <th>Итого</th>
+      </tr>
+    </thead>
+    <tbody id="smeta-body">
+      <tr>
+        <td><input type="text" placeholder="Плитка" /></td>
+        <td><input type="number" placeholder="12" /></td>
+        <td><input type="number" placeholder="800" /></td>
+        <td class="row-total">0</td>
+      </tr>
+    </tbody>
+  </table>
+  <button onclick="addRow()">Добавить строку</button>
+  <h2>Общий итог: <span id="total">0</span> ₽</h2>
+
+  <script>
+    function addRow() {
+      const tbody = document.getElementById('smeta-body');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" /></td>
+        <td><input type="number" /></td>
+        <td><input type="number" /></td>
+        <td class="row-total">0</td>
+      `;
+      tbody.appendChild(row);
+      attachListeners(row);
+    }
+
+    function attachListeners(row) {
+      const inputs = row.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('input', calculateTotals);
+      });
+    }
+
+    function calculateTotals() {
+      let total = 0;
+      const rows = document.querySelectorAll('#smeta-body tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const qty = parseFloat(cells[1].querySelector('input').value) || 0;
+        const price = parseFloat(cells[2].querySelector('input').value) || 0;
+        const rowTotal = qty * price;
+        cells[3].textContent = rowTotal.toFixed(2);
+        total += rowTotal;
+      });
+      document.getElementById('total').textContent = total.toFixed(2);
+    }
+
+    document.querySelectorAll('#smeta-body tr').forEach(attachListeners);
+  </script>
+</body>
+</html>
